@@ -1296,14 +1296,14 @@ function Dashboard({ state, go }: { state: AppState; go: (view: View) => void })
           <CardTitle>Quick Actions</CardTitle>
         </CardHeader>
         <CardContent className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {[
+          {([
             ["Add Sale", "sales", ShoppingCart],
             ["Add Product", "inventory", PackagePlus],
             ["Add Expense", "expenses", ReceiptText],
             ["Add Customer", "customers", Users],
             ["Record Payment", "debts", WalletCards],
             ["Ask OgaBiz AI", "assistant", Bot],
-          ].map(([label, target, Icon]) => (
+          ] as const).map(([label, target, Icon]) => (
             <Button key={String(label)} variant="outline" className="dashboard-header-button h-14 justify-start gap-3" onClick={() => go(target as View)}>
               <Icon className="size-5" />
               {label}
@@ -1582,7 +1582,7 @@ function SettingsPage({ state, setState, setNotice, backendReady }: SectionProps
 
 type SectionProps = { state: AppState; setState: Dispatch<SetStateAction<AppState>>; setNotice: (notice: string) => void; backendReady?: boolean };
 
-async function saveRecord(url: string, body: unknown, method = "POST") {
+async function saveRecord(url: string, body: unknown, method = "POST"): Promise<any> {
   let businessId = window.localStorage.getItem("ogabiz_business_id");
   if (!businessId) {
     const savedState = window.localStorage.getItem(storageKey);
@@ -1606,7 +1606,7 @@ async function saveRecord(url: string, body: unknown, method = "POST") {
   if (!response.ok) {
     let message = "Save failed. Make sure the backend is running.";
     try {
-      const data = await response.json();
+      const data = await response.json() as { error?: string };
       message = data.error || message;
     } catch {
       // Keep the default message when the server does not return JSON.
